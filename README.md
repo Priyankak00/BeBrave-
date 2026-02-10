@@ -9,5 +9,5 @@ Fear of judgment. Fear of being labeled. Fear of being seen.
 * Placement anxiety.
 * Family expectations.
 * Social comparison.
-#### We here to listen without asking who you are.
+#### We are here to listen without asking who you are.
 A safe place where you will feel safe, empathetic, and non-intrusive.
