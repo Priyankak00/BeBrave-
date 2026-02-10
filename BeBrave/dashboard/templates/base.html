@@ -1,0 +1,53 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}GhostApp{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-900 text-gray-100 font-sans antialiased">
+    <div image-rendering="pixelated" class="bg-gray-800 border border-gray-700 rounded-lg p-4 m-4 text-center">
+        <h1 class="text-2xl font-bold text-indigo-400">Welcome to GhostApp</h1>
+        <p class="text-gray-400 mt-2">We are here to listen without asking who you are.</p>
+    <div ><a href="{% url 'account:user_profile' %}" class="flex items-center w-48 p-3 hover:bg-gray-700 rounded-lg transition text-gray-400 hover:text-white">
+    <i class="fas fa-user-secret mr-3"></i> My Identity
+</a>
+<a href="{% url 'account:quick_signup' %}" class="flex items-center w-48 p-3 hover:bg-gray-700 rounded-lg transition text-gray-400 hover:text-white">
+    <i class="fas fa-user-secret mr-3"></i> Sign Up
+</a>
+    <div class="flex h-screen overflow-hidden">
+        {% if user.is_authenticated %}
+        <aside class="w-64 bg-gray-800 border-r border-gray-700 hidden md:flex flex-col">
+            <div class="p-6">
+                <h1 class="text-2xl font-bold text-indigo-400 tracking-widest uppercase">GhostApp</h1>
+            </div>
+            <nav class="flex-1 px-4 space-y-2">
+                <a href="{% url 'dashboard:index' %}" class="flex items-center p-3 hover:bg-gray-700 rounded-lg transition">
+                    <i class="fas fa-home mr-3 text-indigo-400"></i> Home
+                </a>
+                </nav>
+            <div class="p-4 border-t border-gray-700">
+                <form action="{% url 'account:logout' %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="flex items-center text-red-400 hover:text-red-300 transition">
+                        <i class="fas fa-sign-out-alt mr-2"></i> Disconnect
+                    </button>
+                </form>
+            </div>
+        </aside>
+        {% endif %}
+
+        <main class="flex-1 overflow-y-auto p-6 md:p-10">
+            {% block content %}
+            {% endblock %}
+        </main>
+    </div>
+    <div class="text-center text-gray-500 text-xs py-4">
+        &copy; 2026 BeBrave. All rights reserved.
+    </div>
+    
+</body>
+</html>

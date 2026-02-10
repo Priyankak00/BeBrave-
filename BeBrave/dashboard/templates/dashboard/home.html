@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard | GhostApp{% endblock %}
+
+{% block content %}
+
+<header class="flex justify-between items-center mb-10">
+    <div>
+        <h2 class="text-3xl font-bold">Welcome, <span class="text-indigo-400">{{ user.codename }}</span></h2>
+        <p class="text-gray-400">Identity: {{ user.username|slice:":8" }}...</p>
+    </div>
+</header>
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div class="bg-gray-800 p-6 rounded-2xl border border-gray-700">
+        <h3 class="font-bold mb-2">Anonymous Workspace</h3>
+        <p class="text-gray-400 text-sm">Start your private session.</p>
+    </div>
+</div>
+{% endblock %}
+<div class="dashboard-container">
+    <nav class="sidebar">
+        <div class="nav-icon"><i class="home-icon"></i></div>
+        </nav>
+
+    <main class="content">
+        <header>
+            <h1>Primary Dashboard</h1>
+            <div class="search-bar">...</div>
+        </header>
+        <section class="stats-grid">
+            <div class="card purple-card">Overview...</div>
+            <div class="card pink-card">My Jogging...</div>
+            <div class="card white-card">Bicycle Drill...</div>
+        </section>
+    </main>
+</div>

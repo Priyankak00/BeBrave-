@@ -1,0 +1,25 @@
+.card {
+    border-radius: 30px; /* Very rounded corners */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05); /* Soft, airy shadow */
+    padding: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.3); /* Glass effect border */
+}
+
+.purple-card {
+    background: linear-gradient(135deg, #7a5fc0, #5a4498);
+    color: white;
+}
+
+.pink-card {
+    background: linear-gradient(135deg, #ff8da1, #ff5e78);
+    color: white;
+}
+.sidebar {
+    background-color: #6c52ba;
+    width: 80px;
+    border-radius: 40px; /* Fully rounded container */
+    margin: 20px;
+}
+.content {
+    margin-left: 100px; /* Space for the sidebar */
+}
