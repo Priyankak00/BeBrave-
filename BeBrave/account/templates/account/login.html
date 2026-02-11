@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign Up | BeBrave</title>
+    <title>Log In | BeBrave</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
     <style>
@@ -15,8 +15,8 @@
         }
         body {
             font-family: "Space Grotesk", sans-serif;
-            background: radial-gradient(1200px 600px at 10% 10%, #e0f2fe 0%, transparent 60%),
-                        radial-gradient(900px 500px at 90% 20%, #fef3c7 0%, transparent 55%),
+            background: radial-gradient(1100px 550px at 15% 15%, #e0f2fe 0%, transparent 60%),
+                        radial-gradient(900px 480px at 85% 20%, #fde68a 0%, transparent 55%),
                         linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
             color: var(--ink);
         }
@@ -29,27 +29,27 @@
     <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         <div class="grid lg:grid-cols-2 gap-8 items-stretch">
             <section class="relative overflow-hidden rounded-3xl bg-white/80 backdrop-blur border border-white/60 p-8 shadow-xl">
-                <div class="absolute -top-12 -right-12 h-40 w-40 rounded-full bg-teal-300/30 blur-2xl"></div>
-                <div class="absolute -bottom-12 -left-12 h-40 w-40 rounded-full bg-orange-300/30 blur-2xl"></div>
+                <div class="absolute -top-10 -right-10 h-36 w-36 rounded-full bg-teal-300/30 blur-2xl"></div>
+                <div class="absolute -bottom-10 -left-10 h-36 w-36 rounded-full bg-orange-300/30 blur-2xl"></div>
 
                 <p class="text-sm uppercase tracking-[0.2em] text-slate-500">BeBrave</p>
-                <h1 class="hero-title mt-3 text-4xl sm:text-5xl font-semibold">Create a quiet corner for your thoughts.</h1>
+                <h1 class="hero-title mt-3 text-4xl sm:text-5xl font-semibold">Welcome back to your space.</h1>
                 <p class="mt-4 text-slate-600 leading-relaxed">
-                    Sign up with a username and password. You can return anytime and keep your progress right where you left it.
+                    Log in with your username to pick up exactly where you left off.
                 </p>
 
                 <div class="mt-8 flex items-center gap-4">
-                    <div class="h-12 w-12 rounded-2xl bg-teal-500 text-white flex items-center justify-center text-lg font-bold shadow">BB</div>
+                    <div class="h-12 w-12 rounded-2xl bg-slate-900 text-white flex items-center justify-center text-lg font-bold shadow">BB</div>
                     <div>
-                        <p class="text-sm text-slate-500">No email required</p>
-                        <p class="text-base font-medium">Stay private, stay consistent.</p>
+                        <p class="text-sm text-slate-500">Your reflections are waiting</p>
+                        <p class="text-base font-medium">Continue your journey.</p>
                     </div>
                 </div>
             </section>
 
             <section class="rounded-3xl bg-slate-900 text-white p-8 shadow-2xl">
-                <h2 class="text-2xl font-semibold">Quick Sign Up</h2>
-                <p class="text-slate-300 mt-2">Pick a username you will remember.</p>
+                <h2 class="text-2xl font-semibold">Log In</h2>
+                <p class="text-slate-300 mt-2">Use the username you chose on sign up.</p>
 
                 {% if error %}
                 <div class="mt-4 rounded-2xl border border-red-400/40 bg-red-500/10 px-4 py-3 text-red-200">
@@ -61,22 +61,22 @@
                     {% csrf_token %}
                     <div>
                         <label for="username" class="block text-sm text-slate-300">Username</label>
-                        <input id="username" type="text" name="username" placeholder="e.g. moonlight_fox" value="{{ request.POST.username }}"
+                        <input id="username" type="text" name="username" placeholder="e.g. moonlight_fox" value="{{ request.POST.username }}" required
                                class="mt-1 w-full rounded-2xl border border-slate-700 bg-slate-800/60 px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-teal-400">
                     </div>
                     <div>
                         <label for="password" class="block text-sm text-slate-300">Password</label>
-                        <input id="password" type="password" name="password" placeholder="Create a password" required
+                        <input id="password" type="password" name="password" placeholder="Enter your password" required
                                class="mt-1 w-full rounded-2xl border border-slate-700 bg-slate-800/60 px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-teal-400">
                     </div>
                     <button type="submit" class="w-full rounded-2xl bg-teal-500 hover:bg-teal-400 text-slate-900 font-semibold py-3 transition">
-                        Start My Space
+                        Continue
                     </button>
                 </form>
 
                 <div class="mt-6 flex items-center justify-between text-sm text-slate-400">
-                    <span>Already have an account?</span>
-                    <a href="{% url 'account:login' %}" class="text-teal-300 hover:text-teal-200">Log in</a>
+                    <span>New to BeBrave?</span>
+                    <a href="{% url 'account:quick_signup' %}" class="text-teal-300 hover:text-teal-200">Create an account</a>
                 </div>
             </section>
         </div>

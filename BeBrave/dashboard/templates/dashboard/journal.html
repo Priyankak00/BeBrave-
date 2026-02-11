@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}Journal | BeBrave{% endblock %}
+
+{% block content %}
+<style>
+	.glass-card {
+		background: rgba(15, 23, 42, 0.75);
+		border: 1px solid rgba(51, 65, 85, 0.7);
+		border-radius: 24px;
+	}
+</style>
+
+<div class="max-w-4xl mx-auto">
+	<header class="flex flex-wrap items-center justify-between gap-4 mb-6">
+		<div>
+			<h1 class="text-2xl font-semibold text-white">Journals</h1>
+			<p class="text-slate-400">Your saved private entries.</p>
+		</div>
+		<a href="{% url 'dashboard:dashboard_home' %}" class="rounded-full border border-slate-600 px-4 py-2 text-slate-200 hover:border-teal-400 hover:text-teal-300 transition">Back to Dashboard</a>
+	</header>
+
+	<section class="mt-8 glass-card p-6 sm:p-8 shadow-md">
+		<h2 class="text-lg font-semibold text-white">Recent Entries</h2>
+		{% if recent_entries %}
+		<div class="mt-4 space-y-3">
+			{% for entry in recent_entries %}
+			<div class="rounded-2xl border border-slate-700 bg-slate-900/60 px-4 py-3">
+				<p class="text-xs text-slate-500">{{ entry.created_at|date:"M d, H:i" }}</p>
+				<p class="text-sm font-medium text-white">{{ entry.title|default:"Untitled" }}</p>
+				<p class="text-sm text-slate-300 mt-1">{{ entry.body|truncatechars:140 }}</p>
+			</div>
+			{% endfor %}
+		</div>
+		{% else %}
+		<p class="text-slate-400 mt-3">No journal entries yet.</p>
+		{% endif %}
+	</section>
+</div>
+{% endblock %}

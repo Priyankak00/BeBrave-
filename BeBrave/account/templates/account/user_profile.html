@@ -1,3 +1,94 @@
-<h1>User Profile</h1>
-<p>This is the user profile page. More features will be added here soon!</p>
-<a href="{% url 'dashboard:dashboard_home' %}"><button>Back to Dashboard</button></a>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Space | BeBrave</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            font-family: 'Inter', sans-serif;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 24px;
+        }
+        .emoji-pick input:checked + span {
+            background: #0ea5e9;
+            color: white;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+    <div class="max-w-4xl mx-auto">
+        <header class="flex flex-wrap items-center justify-between gap-4 mb-8">
+            <div>
+                <h1 class="text-2xl font-semibold text-slate-800">Welcome back, Friend.</h1>
+                <p class="text-slate-500 italic">"One step at a time."</p>
+            </div>
+            <a href="{% url 'dashboard:dashboard_home' %}" class="rounded-full border border-slate-300 px-4 py-2 text-slate-700 hover:border-teal-400 hover:text-teal-600 transition">Back to Dashboard</a>
+        </header>
+
+        <section class="glass-card p-6 sm:p-8 shadow-md">
+            <h2 class="text-lg font-medium text-slate-800">How are you feeling right now?</h2>
+            <p class="text-slate-500 text-sm mt-1">Choose one mood per day. You can edit it later.</p>
+
+            {% if error %}
+            <div class="mt-4 rounded-2xl border border-red-300 bg-red-50 px-4 py-3 text-red-700">
+                {{ error }}
+            </div>
+            {% endif %}
+
+            <form method="post" class="mt-6 space-y-6">
+                {% csrf_token %}
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 emoji-pick">
+                    <label class="cursor-pointer">
+                        <input type="radio" name="mood" value="low" class="sr-only" {% if today_mood == 'low' %}checked{% endif %}>
+                        <span class="flex items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 py-3 text-slate-600 transition">😔 Low</span>
+                    </label>
+                    <label class="cursor-pointer">
+                        <input type="radio" name="mood" value="uneasy" class="sr-only" {% if today_mood == 'uneasy' %}checked{% endif %}>
+                        <span class="flex items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 py-3 text-slate-600 transition">😕 Uneasy</span>
+                    </label>
+                    <label class="cursor-pointer">
+                        <input type="radio" name="mood" value="okay" class="sr-only" {% if today_mood == 'okay' or not today_mood %}checked{% endif %}>
+                        <span class="flex items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 py-3 text-slate-600 transition">😐 Okay</span>
+                    </label>
+                    <label class="cursor-pointer">
+                        <input type="radio" name="mood" value="bright" class="sr-only" {% if today_mood == 'bright' %}checked{% endif %}>
+                        <span class="flex items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 py-3 text-slate-600 transition">😊 Bright</span>
+                    </label>
+                </div>
+
+                <div>
+                    <label for="stress_level" class="block text-sm font-medium text-slate-700">Stress level (1 = calm, 5 = high)</label>
+                    <input id="stress_level" name="stress_level" type="range" min="1" max="5" value="3" class="mt-2 w-full accent-teal-500">
+                </div>
+                <div>
+                    <label for="sleep_hours" class="block text-sm font-medium text-slate-700">Sleep hours last night</label>
+                    <input id="sleep_hours" name="sleep_hours" type="number" step="0.5" min="0" max="12" placeholder="e.g. 7.5" required
+                           class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 focus:outline-none focus:ring-2 focus:ring-teal-400">
+                </div>
+                <button type="submit" class="w-full rounded-2xl bg-teal-500 hover:bg-teal-400 text-white font-semibold py-3 transition">
+                    Save and Predict Weekly Calm
+                </button>
+            </form>
+
+            {% if prediction %}
+            <div class="mt-6 rounded-2xl bg-slate-900 text-white p-5">
+                <p class="text-slate-300 text-sm">Weekly Calm Prediction</p>
+                <div class="flex items-baseline gap-2 mt-2">
+                    <span class="text-3xl font-semibold text-teal-300">{{ prediction }}</span>
+                    <span class="text-xs text-slate-400">/ 100</span>
+                </div>
+            </div>
+            {% endif %}
+        </section>
+    </div>
+</body>
+</html>

@@ -4,36 +4,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}GhostApp{% endblock %}</title>
+    <title>{% block title %}BeBrave{% endblock %}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body class="bg-gray-900 text-gray-100 font-sans antialiased">
-    <div image-rendering="pixelated" class="bg-gray-800 border border-gray-700 rounded-lg p-4 m-4 text-center">
-        <h1 class="text-2xl font-bold text-indigo-400">Welcome to GhostApp</h1>
-        <p class="text-gray-400 mt-2">We are here to listen without asking who you are.</p>
-    <div ><a href="{% url 'account:user_profile' %}" class="flex items-center w-48 p-3 hover:bg-gray-700 rounded-lg transition text-gray-400 hover:text-white">
-    <i class="fas fa-user-secret mr-3"></i> My Identity
-</a>
-<a href="{% url 'account:quick_signup' %}" class="flex items-center w-48 p-3 hover:bg-gray-700 rounded-lg transition text-gray-400 hover:text-white">
-    <i class="fas fa-user-secret mr-3"></i> Sign Up
-</a>
+    <header class="mx-4 mt-4 rounded-2xl border border-gray-700 bg-gray-800/90 px-5 py-4">
+        <div class="flex flex-wrap items-center justify-between gap-4">
+            <div class="flex items-center gap-4">
+                <img src="{% static 'images/logo.jpg' %}" alt="BeBrave logo" class="h-12 w-12 rounded-xl object-cover" />
+                <div>
+                    <h1 class="text-2xl font-bold text-indigo-400">Welcome to BeBrave</h1>
+                    <p class="text-gray-400">We are here to listen without asking who you are.</p>
+                </div>
+            </div>
+            <nav class="flex flex-wrap items-center gap-2">
+                <a href="{% url 'account:user_profile' %}" class="flex items-center gap-2 rounded-full border border-gray-700 px-4 py-2 text-gray-300 hover:border-indigo-400 hover:text-white transition">
+                    <i class="fas fa-user-secret"></i> My Identity
+                </a>
+                {% if not user.is_authenticated %}
+                <a href="{% url 'account:quick_signup' %}" class="flex items-center gap-2 rounded-full border border-gray-700 px-4 py-2 text-gray-300 hover:border-teal-400 hover:text-white transition">
+                    <i class="fas fa-user-plus"></i> Sign Up
+                </a>
+                <a href="{% url 'account:login' %}" class="flex items-center gap-2 rounded-full border border-gray-700 px-4 py-2 text-gray-300 hover:border-amber-400 hover:text-white transition">
+                    <i class="fas fa-user-circle"></i> Log In
+                </a>
+                {% endif %}
+            </nav>
+        </div>
+    </header>
     <div class="flex h-screen overflow-hidden">
         {% if user.is_authenticated %}
         <aside class="w-64 bg-gray-800 border-r border-gray-700 hidden md:flex flex-col">
             <div class="p-6">
-                <h1 class="text-2xl font-bold text-indigo-400 tracking-widest uppercase">GhostApp</h1>
+                <h1 class="text-2xl font-bold text-indigo-400 tracking-widest uppercase">BeBrave</h1>
             </div>
             <nav class="flex-1 px-4 space-y-2">
-                <a href="{% url 'dashboard:index' %}" class="flex items-center p-3 hover:bg-gray-700 rounded-lg transition">
+                <a href="{% url 'dashboard:dashboard_home' %}" class="flex items-center p-3 hover:bg-gray-700 rounded-lg transition">
                     <i class="fas fa-home mr-3 text-indigo-400"></i> Home
+                </a>
+                <a href="{% url 'dashboard:journal' %}" class="flex items-center p-3 hover:bg-gray-700 rounded-lg transition">
+                    <i class="fas fa-book mr-3 text-indigo-400"></i> Journals
+                </a>
+                <a href="#" class="flex items-center p-3 hover:bg-gray-700 rounded-lg transition">
+                    <i class="fas fa-heart mr-3 text-indigo-400"></i> Self-care tips
+                </a>
+                <a href="#" class="flex items-center p-3 hover:bg-gray-700 rounded-lg transition">
+                    <i class="fas fa-phone-alt mr-3 text-indigo-400"></i> Helplines
+                </a>
+                <a href="#" class="flex items-center p-3 hover:bg-gray-700 rounded-lg transition">
+                    <i class="fas fa-user-md mr-3 text-indigo-400"></i> Counseling links
                 </a>
                 </nav>
             <div class="p-4 border-t border-gray-700">
                 <form action="{% url 'account:logout' %}" method="post">
                     {% csrf_token %}
                     <button type="submit" class="flex items-center text-red-400 hover:text-red-300 transition">
-                        <i class="fas fa-sign-out-alt mr-2"></i> Disconnect
+                        <i class="fas fa-sign-out-alt mr-2"></i> Logout
                     </button>
                 </form>
             </div>

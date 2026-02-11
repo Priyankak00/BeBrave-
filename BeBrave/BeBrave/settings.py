@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -20,12 +21,20 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-t6l(l9-*%394v4xf#zs6i2myecfb-c62d#m74j4kmsyiv4k=c!'
+SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-t6l(l9-*%394v4xf#zs6i2myecfb-c62d#m74j4kmsyiv4k=c!')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+def _env_bool(name, default=False):
+    value = os.getenv(name)
+    if value is None:
+        return default
+    return value.strip().lower() in {'1', 'true', 'yes', 'on'}
 
-ALLOWED_HOSTS = []
+DEBUG = _env_bool('DEBUG', True)
+
+ALLOWED_HOSTS = [
+    host.strip() for host in os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',') if host.strip()
+]
 
 
 # Application definition
@@ -43,6 +52,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -117,4 +127,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 AUTH_USER_MODEL = 'account.AnonymousUserAccount'
+LOGOUT_REDIRECT_URL = 'dashboard:dashboard_home'
+LOGIN_URL = 'account:login'

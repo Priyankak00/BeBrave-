@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Journal | BeBrave</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #eef2f7 0%, #d7e0f1 100%);
+            min-height: 100vh;
+            font-family: 'Inter', sans-serif;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 24px;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+    <div class="max-w-4xl mx-auto">
+        <header class="flex flex-wrap items-center justify-between gap-4 mb-6">
+            <div>
+                <h1 class="text-2xl font-semibold text-slate-800">Journal Editor</h1>
+                <p class="text-slate-500">Write your thoughts and save them privately.</p>
+            </div>
+            <a href="{% url 'dashboard:dashboard_home' %}" class="rounded-full border border-slate-300 px-4 py-2 text-slate-700 hover:border-teal-400 hover:text-teal-600 transition">Back to Dashboard</a>
+        </header>
+
+        <section class="glass-card p-6 sm:p-8 shadow-md">
+            {% if error %}
+            <div class="mb-4 rounded-2xl border border-red-300 bg-red-50 px-4 py-3 text-red-700">
+                {{ error }}
+            </div>
+            {% endif %}
+            {% if success %}
+            <div class="mb-4 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-emerald-700">
+                {{ success }}
+            </div>
+            {% endif %}
+
+            <form method="post" class="space-y-4">
+                {% csrf_token %}
+                <div>
+                    <label for="title" class="block text-sm font-medium text-slate-700">Title (optional)</label>
+                    <input id="title" name="title" type="text" placeholder="Give this entry a title"
+                           class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 focus:outline-none focus:ring-2 focus:ring-teal-400">
+                </div>
+                <div>
+                    <label for="body" class="block text-sm font-medium text-slate-700">Your entry</label>
+                    <textarea id="body" name="body" rows="8" placeholder="Write your thoughts here..."
+                              class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 focus:outline-none focus:ring-2 focus:ring-teal-400"></textarea>
+                </div>
+                <button type="submit" class="w-full rounded-2xl bg-teal-500 hover:bg-teal-400 text-white font-semibold py-3 transition">
+                    Save Journal Entry
+                </button>
+            </form>
+        </section>
+
+        <section class="mt-8 glass-card p-6 sm:p-8 shadow-md">
+            <h2 class="text-lg font-semibold text-slate-800">Recent Entries</h2>
+            {% if recent_entries %}
+            <div class="mt-4 space-y-3">
+                {% for entry in recent_entries %}
+                <div class="rounded-2xl border border-slate-200 bg-white px-4 py-3">
+                    <p class="text-xs text-slate-400">{{ entry.created_at|date:"M d, H:i" }}</p>
+                    <p class="text-sm font-medium text-slate-800">{{ entry.title|default:"Untitled" }}</p>
+                    <p class="text-sm text-slate-600 mt-1">{{ entry.body|truncatechars:140 }}</p>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="text-slate-500 mt-3">No journal entries yet.</p>
+            {% endif %}
+        </section>
+    </div>
+</body>
+</html>

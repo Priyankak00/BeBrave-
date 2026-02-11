@@ -1,37 +1,294 @@
 {% extends "base.html" %}
 
-{% block title %}Dashboard | GhostApp{% endblock %}
+{% block title %}Dashboard | BeBrave{% endblock %}
 
 {% block content %}
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Fraunces:wght@600;700&display=swap');
+    .bb-title { font-family: "Fraunces", serif; }
+    .bb-sans { font-family: "Space Grotesk", sans-serif; }
+    .bb-card { background: linear-gradient(135deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.95)); }
+    .bb-glow { box-shadow: 0 20px 50px rgba(20, 184, 166, 0.18); }
+    .bb-fade { animation: bb-rise 0.7s ease forwards; opacity: 0; transform: translateY(12px); }
+    @keyframes bb-rise { to { opacity: 1; transform: translateY(0); } }
+</style>
 
-<header class="flex justify-between items-center mb-10">
-    <div>
-        <h2 class="text-3xl font-bold">Welcome, <span class="text-indigo-400">{{ user.codename }}</span></h2>
-        <p class="text-gray-400">Identity: {{ user.username|slice:":8" }}...</p>
-    </div>
-</header>
+<div class="bb-sans space-y-10">
+    <section class="relative overflow-hidden rounded-3xl border border-slate-800 bg-slate-900/80 p-8 md:p-10">
+        <div class="absolute -top-20 -right-20 h-56 w-56 rounded-full bg-teal-500/20 blur-3xl"></div>
+        <div class="absolute -bottom-24 -left-16 h-56 w-56 rounded-full bg-amber-500/20 blur-3xl"></div>
 
-<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-    <div class="bg-gray-800 p-6 rounded-2xl border border-gray-700">
-        <h3 class="font-bold mb-2">Anonymous Workspace</h3>
-        <p class="text-gray-400 text-sm">Start your private session.</p>
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+            <div class="space-y-3">
+                <p class="text-xs uppercase tracking-[0.35em] text-slate-400">BeBrave Space</p>
+                <h2 class="bb-title text-3xl md:text-4xl text-white">
+                    Welcome back, <span class="text-teal-300">{{ user.codename }}</span>
+                </h2>
+                <p class="text-slate-400">Identity: {{ user.username|slice:":8" }}...</p>
+            </div>
+            <div class="flex flex-wrap gap-3">
+                <a href="{% url 'dashboard:journal' %}" class="rounded-full border border-slate-600 px-5 py-2 text-slate-200 hover:border-teal-400 hover:text-teal-300 transition">Start Journal</a>
+                <button class="rounded-full border border-slate-600 px-5 py-2 text-slate-200 hover:border-amber-400 hover:text-amber-300 transition">Explore Tools</button>
+            </div>
+        </div>
+    </section>
+
+    <section class="grid gap-6 md:grid-cols-3">
+        <div class="bb-card rounded-2xl p-6 border border-slate-800 bb-fade" style="animation-delay: 0.05s;">
+            <p class="text-slate-400 text-sm">Calm Streak</p>
+            <div class="mt-3 flex items-baseline gap-2">
+                <span class="text-3xl font-semibold text-white">{{ calm_streak_days }}</span>
+                <span class="text-sm text-teal-300">days</span>
+            </div>
+            <div class="mt-4 h-2 rounded-full bg-slate-800">
+                <div class="h-2 rounded-full bg-teal-400" data-progress="{{ calm_streak_days|default:0 }}"></div>
+            </div>
+        </div>
+        <div class="bb-card rounded-2xl p-6 border border-slate-800 bb-fade" style="animation-delay: 0.1s;">
+            <p class="text-slate-400 text-sm">Mood Balance</p>
+            <div class="mt-3 flex items-baseline gap-2">
+                <span class="text-3xl font-semibold text-white">{{ mood_balance_pct }}%</span>
+                <span class="text-sm text-amber-300">steady</span>
+            </div>
+            <div class="mt-4 h-2 rounded-full bg-slate-800">
+                <div class="h-2 rounded-full bg-amber-400" data-progress="{{ mood_balance_pct|default:0 }}"></div>
+            </div>
+        </div>
+        <div class="bb-card rounded-2xl p-6 border border-slate-800 bb-fade" style="animation-delay: 0.15s;">
+            <p class="text-slate-400 text-sm">Private Notes</p>
+            <div class="mt-3 flex items-baseline gap-2">
+                <span class="text-3xl font-semibold text-white">{{ private_notes_count }}</span>
+                <span class="text-sm text-slate-400">entries</span>
+            </div>
+            {% if last_note_time %}
+            <p class="mt-4 text-sm text-slate-500">Last saved {{ last_note_time|date:"M d, H:i" }}.</p>
+            {% else %}
+            <p class="mt-4 text-sm text-slate-500">No entries yet.</p>
+            {% endif %}
+        </div>
+    </section>
+
+    <section class="grid gap-6 lg:grid-cols-[1.4fr_1fr]">
+        <div class="rounded-3xl border border-slate-800 bg-slate-900/80 p-6 md:p-8">
+            <h3 class="text-xl font-semibold text-white">Today's Check-in</h3>
+            <p class="text-slate-400 mt-2">Pick the tone that feels closest right now.</p>
+            <form method="post" class="mt-6 grid grid-cols-2 sm:grid-cols-4 gap-4">
+                {% csrf_token %}
+                <button type="submit" name="mood" value="low" class="rounded-2xl border border-slate-800 bg-slate-900/70 p-4 text-left hover:border-teal-400 hover:bg-slate-800/80 transition {% if today_mood == 'low' %}border-teal-400 bg-slate-800/80{% endif %}">
+                    <p class="text-lg text-white">Low</p>
+                    <p class="text-xs text-slate-500">Need grounding</p>
+                </button>
+                <button type="submit" name="mood" value="uneasy" class="rounded-2xl border border-slate-800 bg-slate-900/70 p-4 text-left hover:border-amber-400 hover:bg-slate-800/80 transition {% if today_mood == 'uneasy' %}border-amber-400 bg-slate-800/80{% endif %}">
+                    <p class="text-lg text-white">Uneasy</p>
+                    <p class="text-xs text-slate-500">A bit heavy</p>
+                </button>
+                <button type="submit" name="mood" value="okay" class="rounded-2xl border border-slate-800 bg-slate-900/70 p-4 text-left hover:border-teal-400 hover:bg-slate-800/80 transition {% if today_mood == 'okay' %}border-teal-400 bg-slate-800/80{% endif %}">
+                    <p class="text-lg text-white">Okay</p>
+                    <p class="text-xs text-slate-500">Holding steady</p>
+                </button>
+                <button type="submit" name="mood" value="bright" class="rounded-2xl border border-slate-800 bg-slate-900/70 p-4 text-left hover:border-amber-400 hover:bg-slate-800/80 transition {% if today_mood == 'bright' %}border-amber-400 bg-slate-800/80{% endif %}">
+                    <p class="text-lg text-white">Bright</p>
+                    <p class="text-xs text-slate-500">Energy up</p>
+                </button>
+            </form>
+            <div class="mt-6 rounded-2xl bg-gradient-to-r from-teal-500/20 via-slate-900/0 to-amber-500/20 p-5">
+                <p class="text-sm text-slate-300">Suggested: {{ suggestion.title }}</p>
+                <p class="text-xs text-slate-400 mt-1">{{ suggestion.desc }}</p>
+                <div class="mt-3 flex flex-wrap items-center gap-3">
+                    <button type="button" id="suggestion-start" data-seconds="{{ suggestion.seconds }}" data-done="{{ suggestion.done|escapejs }}" class="rounded-full bg-teal-400 px-4 py-2 text-slate-900 font-semibold hover:bg-teal-300 transition">{{ suggestion.cta }}</button>
+                    <span id="suggestion-timer" class="text-xs text-slate-400"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="rounded-3xl border border-slate-800 bg-slate-900/80 p-6 md:p-8">
+            <div class="flex items-center justify-between">
+                <h3 class="text-xl font-semibold text-white">Live Thoughts</h3>
+                <span class="text-xs text-emerald-300">Live</span>
+            </div>
+            <p class="text-slate-400 mt-2">Post short check-ins like X. Your latest thoughts appear here.</p>
+
+            <form class="mt-5 space-y-3">
+                <textarea rows="3" placeholder="What's on your mind?" class="w-full rounded-2xl border border-slate-700 bg-slate-900/60 px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-teal-400"></textarea>
+                <div class="flex items-center justify-between text-xs text-slate-500">
+                    <span>0 / 180</span>
+                    <button type="button" class="rounded-full bg-teal-400 px-4 py-2 text-slate-900 font-semibold hover:bg-teal-300 transition">Post</button>
+                </div>
+            </form>
+
+            <div class="mt-6 space-y-4">
+                <div class="rounded-2xl border border-slate-800 bg-slate-900/60 p-4 hover:border-teal-400 transition">
+                    <div class="flex items-center justify-between text-xs text-slate-500">
+                        <span>@{{ user.username|slice:":8" }}</span>
+                        <span>2m ago</span>
+                    </div>
+                    <p class="text-white mt-2">"Breathing helped me slow the noise today."</p>
+                    <div class="mt-3 flex items-center gap-3 text-xs text-slate-400">
+                        <button type="button" class="rounded-full border border-slate-700 px-3 py-1 hover:border-teal-400 hover:text-teal-300 transition">Like</button>
+                        <span>12 likes</span>
+                        <button type="button" class="rounded-full border border-slate-700 px-3 py-1 hover:border-amber-400 hover:text-amber-300 transition">Comment</button>
+                        <span>2 comments</span>
+                    </div>
+                    <div class="mt-3 space-y-2 text-xs text-slate-300">
+                        <p><span class="text-slate-500">Anonymous:</span> Needed this reminder.</p>
+                        <p><span class="text-slate-500">Guest:</span> Thank you for sharing.</p>
+                    </div>
+                    <div class="mt-3">
+                        <input type="text" placeholder="Write a comment..." class="w-full rounded-2xl border border-slate-700 bg-slate-900/60 px-3 py-2 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-teal-400">
+                    </div>
+                </div>
+                <div class="rounded-2xl border border-slate-800 bg-slate-900/60 p-4 hover:border-slate-600 transition">
+                    <div class="flex items-center justify-between text-xs text-slate-500">
+                        <span>Anonymous</span>
+                        <span>6m ago</span>
+                    </div>
+                    <p class="text-white mt-2">"I said no today. It felt hard, but lighter after."</p>
+                    <div class="mt-3 flex items-center gap-3 text-xs text-slate-400">
+                        <button type="button" class="rounded-full border border-slate-700 px-3 py-1 hover:border-teal-400 hover:text-teal-300 transition">Like</button>
+                        <span>7 likes</span>
+                        <button type="button" class="rounded-full border border-slate-700 px-3 py-1 hover:border-amber-400 hover:text-amber-300 transition">Comment</button>
+                        <span>1 comment</span>
+                    </div>
+                    <div class="mt-3 space-y-2 text-xs text-slate-300">
+                        <p><span class="text-slate-500">Anonymous:</span> Proud of you.</p>
+                    </div>
+                    <div class="mt-3">
+                        <input type="text" placeholder="Write a comment..." class="w-full rounded-2xl border border-slate-700 bg-slate-900/60 px-3 py-2 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-teal-400">
+                    </div>
+                </div>
+                <div class="rounded-2xl border border-slate-800 bg-slate-900/60 p-4 hover:border-amber-400 transition">
+                    <div class="flex items-center justify-between text-xs text-slate-500">
+                        <span>@{{ user.username|slice:":8" }}</span>
+                        <span>18m ago</span>
+                    </div>
+                    <p class="text-white mt-2">"Noticed small wins — felt lighter after a walk."</p>
+                    <div class="mt-3 flex items-center gap-3 text-xs text-slate-400">
+                        <button type="button" class="rounded-full border border-slate-700 px-3 py-1 hover:border-teal-400 hover:text-teal-300 transition">Like</button>
+                        <span>4 likes</span>
+                        <button type="button" class="rounded-full border border-slate-700 px-3 py-1 hover:border-amber-400 hover:text-amber-300 transition">Comment</button>
+                        <span>0 comments</span>
+                    </div>
+                    <div class="mt-3">
+                        <input type="text" placeholder="Write a comment..." class="w-full rounded-2xl border border-slate-700 bg-slate-900/60 px-3 py-2 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-teal-400">
+                    </div>
+                </div>
+                <div class="rounded-2xl border border-slate-800 bg-slate-900/60 p-4 hover:border-slate-600 transition">
+                    <div class="flex items-center justify-between text-xs text-slate-500">
+                        <span>Anonymous</span>
+                        <span>31m ago</span>
+                    </div>
+                    <p class="text-white mt-2">"Today was heavy. I still showed up."</p>
+                    <div class="mt-3 flex items-center gap-3 text-xs text-slate-400">
+                        <button type="button" class="rounded-full border border-slate-700 px-3 py-1 hover:border-teal-400 hover:text-teal-300 transition">Like</button>
+                        <span>19 likes</span>
+                        <button type="button" class="rounded-full border border-slate-700 px-3 py-1 hover:border-amber-400 hover:text-amber-300 transition">Comment</button>
+                        <span>3 comments</span>
+                    </div>
+                    <div class="mt-3 space-y-2 text-xs text-slate-300">
+                        <p><span class="text-slate-500">Guest:</span> You did enough.</p>
+                        <p><span class="text-slate-500">Anonymous:</span> Same here.</p>
+                    </div>
+                    <div class="mt-3">
+                        <input type="text" placeholder="Write a comment..." class="w-full rounded-2xl border border-slate-700 bg-slate-900/60 px-3 py-2 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-teal-400">
+                    </div>
+                </div>
+                <button class="w-full rounded-2xl border border-slate-700 px-4 py-3 text-slate-300 hover:border-teal-400 hover:text-teal-300 transition">
+                    View all posts
+                </button>
+            </div>
+            <div class="mt-6 rounded-2xl border border-slate-800 bg-slate-900/70 p-4">
+                <p class="text-xs uppercase tracking-[0.2em] text-slate-500">Quiet Quotes</p>
+                <p class="text-white mt-2">"Small steps still move you forward."</p>
+                <p class="text-white mt-2">"Your pace is allowed to be gentle."</p>
+            </div>
+        </div>
+    </section>
+</div>
+<div id="suggestion-modal" class="fixed inset-0 hidden items-center justify-center bg-slate-900/70 p-4">
+    <div class="w-full max-w-sm rounded-3xl bg-white p-6 text-slate-900 shadow-2xl">
+        <h4 class="text-xl font-semibold">Yay!</h4>
+        <p id="suggestion-modal-text" class="mt-2 text-sm text-slate-600"></p>
+        <button id="suggestion-modal-close" class="mt-5 w-full rounded-full bg-teal-500 px-4 py-2 text-white font-semibold hover:bg-teal-400 transition">Close</button>
     </div>
 </div>
+<script>
+    document.querySelectorAll('[data-progress]').forEach((bar) => {
+        const raw = parseInt(bar.getAttribute('data-progress'), 10);
+        const value = Number.isNaN(raw) ? 0 : Math.max(0, Math.min(100, raw));
+        bar.style.width = `${value}%`;
+    });
+
+    const startButton = document.getElementById('suggestion-start');
+    const timerLabel = document.getElementById('suggestion-timer');
+    let timerId = null;
+
+    const formatTime = (seconds) => {
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        return `${mins}:${secs.toString().padStart(2, '0')}`;
+    };
+
+    const modal = document.getElementById('suggestion-modal');
+    const modalText = document.getElementById('suggestion-modal-text');
+    const modalClose = document.getElementById('suggestion-modal-close');
+
+    const openModal = (message) => {
+        if (!modal || !modalText) {
+            return;
+        }
+        modalText.textContent = message;
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    };
+
+    const closeModal = () => {
+        if (!modal) {
+            return;
+        }
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    };
+
+    if (modalClose) {
+        modalClose.addEventListener('click', closeModal);
+    }
+    if (modal) {
+        modal.addEventListener('click', (event) => {
+            if (event.target === modal) {
+                closeModal();
+            }
+        });
+    }
+
+    if (startButton) {
+        startButton.addEventListener('click', () => {
+            const total = parseInt(startButton.getAttribute('data-seconds'), 10);
+            if (!total || Number.isNaN(total)) {
+                return;
+            }
+            if (timerId) {
+                clearInterval(timerId);
+            }
+            let remaining = total;
+            startButton.disabled = true;
+            startButton.classList.add('opacity-60', 'cursor-not-allowed');
+            timerLabel.textContent = `Time left: ${formatTime(remaining)}`;
+
+            timerId = setInterval(() => {
+                remaining -= 1;
+                if (remaining <= 0) {
+                    clearInterval(timerId);
+                    timerId = null;
+                    startButton.disabled = false;
+                    startButton.classList.remove('opacity-60', 'cursor-not-allowed');
+                    timerLabel.textContent = '';
+                    const doneMsg = startButton.getAttribute('data-done') || 'You did it.';
+                    openModal(doneMsg);
+                    return;
+                }
+                timerLabel.textContent = `Time left: ${formatTime(remaining)}`;
+            }, 1000);
+        });
+    }
+</script>
 {% endblock %}
-<div class="dashboard-container">
-    <nav class="sidebar">
-        <div class="nav-icon"><i class="home-icon"></i></div>
-        </nav>
-
-    <main class="content">
-        <header>
-            <h1>Primary Dashboard</h1>
-            <div class="search-bar">...</div>
-        </header>
-        <section class="stats-grid">
-            <div class="card purple-card">Overview...</div>
-            <div class="card pink-card">My Jogging...</div>
-            <div class="card white-card">Bicycle Drill...</div>
-        </section>
-    </main>
-</div>
