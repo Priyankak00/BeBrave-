@@ -30,8 +30,7 @@ BeBrave is a student mental health support platform focused on privacy and gentl
 	- `http://127.0.0.1:8000/`
 
 ## Screenshots
-- Add dashboard screenshot here
-- Add profile check-in screenshot here
+
 
 ## Roadmap
 - Persist live thoughts, likes, and comments in the database
